@@ -32,16 +32,17 @@ public class ServerWithoutSecurity {
 
 				// If the packet is for transferring the filename sent by the client.
 				if (packetType == 0) {
-					// It seems that of all the packets sent over, the first packet is of type == 0. All subsequent packets are of type == 1.
+					// Client is coded s.t. of all the packets it sends over, the first packet is of type == 0. All subsequent packets are of type == 1.
 
 					System.out.println("Receiving file...");
 
-					int numBytes = fromClient.readInt(); // If client sends file 100.txt, then numBytes is the length of '100.txt', i.e. 7.
+					int numBytes = fromClient.readInt(); // Server expects Client to send over a packet describing the length of the filename over. If client is intending to transmit the file 100.txt, then numBytes is the length of '100.txt', i.e. 7.
 					byte [] filename = new byte[numBytes]; // Create a byte array of numBytes length. Following example, size is 7 bytes.
 					// Nat: Must use readFully()!
 					// Nat: See: https://stackoverflow.com/questions/25897627/datainputstream-read-vs-datainputstream-readfully
-					// Subsequent line of code is such that it reads exactly 7 bytes from input stream (i.e. the entirety of the name of the
-					//  file, and then stores it into the byte array 'filename'.
+					// Server expects that client will send over another packet containing the name of the file itself.
+					//  Subsequent line of code is such that it reads exactly numBytes bytes from this incoming packet
+					//  (i.e. the entirety of the name of the file). and then stores it into the byte array 'filename'.
 					fromClient.readFully(filename, 0, numBytes);
 
 					// Names the output file.

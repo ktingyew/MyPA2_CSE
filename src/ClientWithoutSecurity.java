@@ -46,25 +46,29 @@ public class ClientWithoutSecurity {
 			System.out.println("Sending file...");
 
 			// Send the filename
-			toServer.writeInt(0);
-			toServer.writeInt(filename.getBytes().length);
-			toServer.write(filename.getBytes());
+			toServer.writeInt(0); // This sends a packet that just contains the value '0'. It tells the Server that the very next packet will contain the name of the file to be sent over.
+			toServer.writeInt(filename.getBytes().length); // Send the length of the file name over in another packet.
+			toServer.write(filename.getBytes()); // Send the actual file name itself, in yet another packet.
 			//toServer.flush();
 
 			// Open the file
 			fileInputStream = new FileInputStream(filename);
 			bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 
-	        byte [] fromFileBuffer = new byte[117];
+	        byte [] fromFileBuffer = new byte[117]; // Why 117? I'm not sure.
 
 	        // Send the file
 	        for (boolean fileEnded = false; !fileEnded;) {
 				numBytes = bufferedFileInputStream.read(fromFileBuffer);
 				fileEnded = numBytes < 117;
 
-				toServer.writeInt(1);
-				toServer.writeInt(numBytes);
-				toServer.write(fromFileBuffer);
+				// NOTE: File is broken down into chunks of 117 bytes big. We send each chunk as a packet to Server. But, for every chunk-packet we send over,
+				//  we send 2 preceding packets. So, each chunk of file is transmitted in groups of 3 packets. The first packet identifies that Client will be
+				//  sending over a packet-chunk. The second packet is the length of chunk of file being sent over (it's 117 for the most part, except probably
+				// for the last chunk. The 3rd packet is the actual chunk of file itself.
+				toServer.writeInt(1); // When Server receives this '1', Server will know that the subsequent packet is the length of the chunk of file.
+				toServer.writeInt(numBytes); // Server is coded to read this 'numbytes'. So that it will know how big the next packet will be (which actually contains the chunk of the file).
+				toServer.write(fromFileBuffer); // This is where Client actually sends the chunk of file in a packet.
 				toServer.flush();
 			}
 
