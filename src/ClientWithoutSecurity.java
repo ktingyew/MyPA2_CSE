@@ -45,6 +45,14 @@ public class ClientWithoutSecurity {
 
 			System.out.println("Sending file...");
 
+			// Send a nonce over
+			String nonce = "This is my nonce!";
+			toServer.writeInt(2);
+			toServer.writeInt(nonce.getBytes().length);
+			toServer.write(nonce.getBytes());
+
+
+
 			// Send the filename
 			toServer.writeInt(0); // This sends a packet that just contains the value '0'. It tells the Server that the very next packet will contain the name of the file to be sent over.
 			toServer.writeInt(filename.getBytes().length); // Send the length of the file name over in another packet.

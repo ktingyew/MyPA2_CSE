@@ -30,8 +30,28 @@ public class ServerWithoutSecurity {
 
 				int packetType = fromClient.readInt();
 
+				// If the packet is for sending nonce by Client.
+				if (packetType == 2){
+					System.out.println("Receiving nonce...");
+
+					int numBytes = fromClient.readInt();
+
+					byte [] nonce_bytearray = new byte[numBytes];
+					fromClient.readFully(nonce_bytearray, 0, numBytes);
+					String nonce = new String(nonce_bytearray);
+
+					System.out.println("Nonce is: " + nonce);
+
+					String encrypted_nonce = nonce + " plus some encryption";
+					System.out.println("Encrypted Nonce is: " + encrypted_nonce);
+
+					
+
+				}
+
+
 				// If the packet is for transferring the filename sent by the client.
-				if (packetType == 0) {
+				else if (packetType == 0) {
 					// Client is coded s.t. of all the packets it sends over, the first packet is of type == 0. All subsequent packets are of type == 1.
 
 					System.out.println("Receiving file...");
