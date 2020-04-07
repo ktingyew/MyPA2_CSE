@@ -30,30 +30,43 @@ public class ServerWithoutSecurity {
 
 				int packetType = fromClient.readInt();
 
-				// If the packet is for transferring the filename
+				// If the packet is for transferring the filename sent by the client.
 				if (packetType == 0) {
+					// It seems that of all the packets sent over, the first packet is of type == 0. All subsequent packets are of type == 1.
 
 					System.out.println("Receiving file...");
 
-					int numBytes = fromClient.readInt();
-					byte [] filename = new byte[numBytes];
-					// Must use read fully!
-					// See: https://stackoverflow.com/questions/25897627/datainputstream-read-vs-datainputstream-readfully
+					int numBytes = fromClient.readInt(); // If client sends file 100.txt, then numBytes is the length of '100.txt', i.e. 7.
+					byte [] filename = new byte[numBytes]; // Create a byte array of numBytes length. Following example, size is 7 bytes.
+					// Nat: Must use readFully()!
+					// Nat: See: https://stackoverflow.com/questions/25897627/datainputstream-read-vs-datainputstream-readfully
+					// Subsequent line of code is such that it reads exactly 7 bytes from input stream (i.e. the entirety of the name of the
+					//  file, and then stores it into the byte array 'filename'.
 					fromClient.readFully(filename, 0, numBytes);
 
+					// Names the output file.
 					fileOutputStream = new FileOutputStream("recv_"+new String(filename, 0, numBytes));
+					// Generate the output file.
 					bufferedFileOutputStream = new BufferedOutputStream(fileOutputStream);
 
+				}
 				// If the packet is for transferring a chunk of the file
-				} else if (packetType == 1) {
+				else if (packetType == 1) {
 
+					// Read the size of this packet (in bytes). It should be 117, except for the last packet that might be smaller.
 					int numBytes = fromClient.readInt();
+
+					// Reads all 117 bytes of the packet and stores the content in the byte array 'block'.
 					byte [] block = new byte[numBytes];
 					fromClient.readFully(block, 0, numBytes);
 
+					// If there is non-zero bytes of content in byte array 'block', then write it to the output file.
 					if (numBytes > 0)
 						bufferedFileOutputStream.write(block, 0, numBytes);
 
+					// All intermediate packets have sisze of 117 bytes. If we detect a packet whose size is less than 117, means
+					//  we have already just written the contents of the last packet into the output file, and it's time to close
+					//  the connection.
 					if (numBytes < 117) {
 						System.out.println("Closing connection...");
 

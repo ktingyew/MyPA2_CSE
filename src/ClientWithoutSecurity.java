@@ -8,12 +8,17 @@ public class ClientWithoutSecurity {
 
 	public static void main(String[] args) {
 
-    	String filename = "100.txt";
+		// We can specify the file to send over to Server by hard-coding here. However, we can also choose to specify
+		//  the file to send over through console commands by appending an argument.
+    	String filename = "1000.txt";
     	if (args.length > 0) filename = args[0];
 
+    	// Same reasoning as the file name above. Either hard-code the server address here, or user can provide the
+		//  the server address as an argument in console.
     	String serverAddress = "localhost";
     	if (args.length > 1) filename = args[1];
 
+    	// Same reasoning as file name and server address above.
     	int port = 4321;
     	if (args.length > 2) port = Integer.parseInt(args[2]);
 
@@ -36,7 +41,7 @@ public class ClientWithoutSecurity {
 			// Connect to server and get the input and output streams
 			clientSocket = new Socket(serverAddress, port);
 			toServer = new DataOutputStream(clientSocket.getOutputStream());
-			fromServer = new DataInputStream(clientSocket.getInputStream());
+			fromServer = new DataInputStream(clientSocket.getInputStream()); // Not used because we shouldn't be receiving any input from Server. HMM.
 
 			System.out.println("Sending file...");
 
