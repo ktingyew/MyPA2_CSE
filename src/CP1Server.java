@@ -4,8 +4,10 @@ import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-public class ServerWithoutSecurity {
+public class CP1Server {
 
 	public static void main(String[] args) {
 
@@ -19,6 +21,8 @@ public class ServerWithoutSecurity {
 
 		FileOutputStream fileOutputStream = null;
 		BufferedOutputStream bufferedFileOutputStream = null;
+
+		String CA_Signed_Cert_filepath = "C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\CAsigned.crt";
 
 		try {
 			welcomeSocket = new ServerSocket(port);
@@ -45,7 +49,17 @@ public class ServerWithoutSecurity {
 					String encrypted_nonce = nonce + " plus some encryption";
 					System.out.println("Encrypted Nonce is: " + encrypted_nonce);
 
-					
+					// Server sends back the encrpyted nonce, and certificate.
+					System.out.println("Sending Encrypted Nonce to Client.");
+					toClient.writeInt(0);
+					toClient.writeInt(encrypted_nonce.getBytes().length);
+					toClient.write(encrypted_nonce.getBytes());
+
+					// Server sends its CA-signed certificate contain the Server's public key
+					byte[] CAsignedCert = Files.readAllBytes(Paths.get(CA_Signed_Cert_filepath));
+					toClient.writeInt(CAsignedCert.length);
+					toClient.write(CAsignedCert);
+
 
 				}
 

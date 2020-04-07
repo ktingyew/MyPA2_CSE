@@ -3,14 +3,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.net.Socket;
+import java.security.PublicKey;
 
-public class ClientWithoutSecurity {
+public class CP1Client {
 
 	public static void main(String[] args) {
 
 		// We can specify the file to send over to Server by hard-coding here. However, we can also choose to specify
 		//  the file to send over through console commands by appending an argument.
-    	String filename = "1000.txt";
+    	String filename = "100.txt";
     	if (args.length > 0) filename = args[0];
 
     	// Same reasoning as the file name above. Either hard-code the server address here, or user can provide the
@@ -34,6 +35,8 @@ public class ClientWithoutSecurity {
 
 		long timeStarted = System.nanoTime();
 
+		String CA_Cert_filepath = "C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\cacse.crt";
+
 		try {
 
 			System.out.println("Establishing connection to server...");
@@ -41,15 +44,46 @@ public class ClientWithoutSecurity {
 			// Connect to server and get the input and output streams
 			clientSocket = new Socket(serverAddress, port);
 			toServer = new DataOutputStream(clientSocket.getOutputStream());
-			fromServer = new DataInputStream(clientSocket.getInputStream()); // Not used because we shouldn't be receiving any input from Server. HMM.
+			fromServer = new DataInputStream(clientSocket.getInputStream());
 
 			System.out.println("Sending file...");
 
-			// Send a nonce over
+			// TODO: Generate a proper nonce: possibly current datetime?
 			String nonce = "This is my nonce!";
+			System.out.println("Generated Nonce: " + nonce);
+
+			// Sending nonce over to Server.
+			System.out.println("Sending nonce to Server");
 			toServer.writeInt(2);
 			toServer.writeInt(nonce.getBytes().length);
 			toServer.write(nonce.getBytes());
+
+			int packetType = fromServer.readInt();
+			if (packetType == 0){ // packetType is encrpyted_nonce, and CA-signed Certificate contain Server's public key
+
+				// Receiving encrypted nonce from Server.
+				int encrypted_nonce_size = fromServer.readInt();
+				byte [] encrypted_nonce_bytearray = new byte[encrypted_nonce_size];
+				fromServer.readFully(encrypted_nonce_bytearray, 0, encrypted_nonce_size);
+				String encrypted_nonce = new String(encrypted_nonce_bytearray);
+				System.out.println("Received Encrypted Nonce from Server: " + new String(encrypted_nonce));
+
+				// Receiving CA-signed certificate of Server's public key.
+				int CA_signed_bytearray_size = fromServer.readInt();
+				byte [] CA_signed_bytearray = new byte[CA_signed_bytearray_size];
+				fromServer.readFully(CA_signed_bytearray, 0, CA_signed_bytearray_size);
+				String CA_signed = new String(CA_signed_bytearray);
+				// System.out.println("CA Signed Certification is: " + CA_signed);
+
+				// Validating Server's cert; Verifying Server's cert with CA's public key; Extracting Server's public key
+				PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_filepath);
+
+				// TODO: This is where Client decrypts the encrypted nonce with Server's public key. Then performs comparison with the nonce it sends earlier.
+				System.out.println("Nonce verified. Server authenticated.");
+				System.out.println("Server's Public Key is: " + Server_PublicKey);
+
+
+			}
 
 
 

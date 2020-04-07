@@ -4,7 +4,7 @@ This is my PA2 submission.
 ## What is the problem?
 I think it's about nonce. Without it, there's the playback attack. T can impersonate S by simply playing back what S sends over to C. To elaborate, T will send over the digest (signed with Ks-) to C, along with the certificate signed by CA. C will perform the checks, and indeed thinks that T is indeed S. 
 
-This is a huge problem is C sends unencrypted data over to T, think it's S.
+This is a huge problem if C sends unencrypted data over to T, thinking it's S.
 
 How about if C encrypts the data before sending over? Well, T will not be able to read it, because she needs S's private key (Ks-) to decrypt it. But nevertheless, this is still a problem (although not as big) since C is getting bamboozled by sending data to an unintended recipient.
 
