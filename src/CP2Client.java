@@ -1,4 +1,6 @@
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,7 +17,7 @@ public class CP2Client {
 
         // We can specify the file to send over to Server by hard-coding here. However, we can also choose to specify
         //  the file to send over through console commands by appending an argument.
-        String filename = "200.txt";
+        String filename = "1000.txt";
         if (args.length > 0) filename = args[0];
 
         // Same reasoning as the file name above. Either hard-code the server address here, or user can provide the
@@ -64,7 +66,6 @@ public class CP2Client {
 
             int packetType = fromServer.readInt();
 
-
             // Receiving encrypted nonce from Server.
             int encrypted_nonce_size = fromServer.readInt();
             byte [] encrypted_nonce_bytearray = new byte[encrypted_nonce_size];
@@ -86,6 +87,30 @@ public class CP2Client {
             System.out.println("Nonce verified. Server authenticated.");
             System.out.println("Server's Public Key is: " + Server_PublicKey);
 
+            // Prepare Server's Public Key cipher
+            Cipher rsa_cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            rsa_cipher.init(Cipher.ENCRYPT_MODE, Server_PublicKey);
+
+            // Generate Session Key (AES), and Create Session Key Cipher object
+            KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+            keyGen.init(128);
+            SecretKey aesKey = keyGen.generateKey();
+            Cipher aes_Cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            aes_Cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+            System.out.println("Session Key generated.");
+            System.out.println(Arrays.toString(aesKey.getEncoded()));
+
+            // Encrypt Session Key with Server's Public Key (to be sent over to Server). Note that we set AES session key to be 128-bits, 16-bytes long.
+            byte [] desKey_bytearray = aesKey.getEncoded();
+            byte [] encrypted_desKey = rsa_cipher.doFinal(desKey_bytearray);
+
+            // Send Encrypted Session key over to Server
+            toServer.writeInt(3);
+            toServer.writeInt(encrypted_desKey.length);
+            toServer.write(encrypted_desKey);
+            System.out.println("Sent encrypted session key to Server.");
+            System.out.println(Base64.getEncoder().encodeToString(encrypted_desKey));
+
 
             // Send the filename
             toServer.writeInt(0);
@@ -97,10 +122,6 @@ public class CP2Client {
             fileInputStream = new FileInputStream(filename);
             bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 
-            // Prepare all the ciphering stuff.
-            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, Server_PublicKey);
-
             byte [] fromFileBuffer = new byte[117];
 
             // Send the file
@@ -108,28 +129,27 @@ public class CP2Client {
             for (boolean fileEnded = false; !fileEnded;) {
 
                 numBytes = bufferedFileInputStream.read(fromFileBuffer);
+
                 if (numBytes < 117){
                     System.out.println("Last Packet to be sent");
-                    fromFileBuffer = Arrays.copyOfRange(fromFileBuffer, 0, numBytes);
+
                 }
                 fileEnded = numBytes < 117;
 
-                byte[] ciphertext_bytearray = cipher.doFinal(fromFileBuffer);
+                byte[] ciphertext_bytearray = aes_Cipher.doFinal(fromFileBuffer);
 
                 toServer.writeInt(1);
                 toServer.writeInt(numBytes);
                 toServer.write(ciphertext_bytearray);
                 toServer.flush();
 
-                System.out.println("Sending packet Number " + i + " of size ");
-                String ciphertext64 = Base64.getEncoder().encodeToString(ciphertext_bytearray);
-                System.out.println(ciphertext64);
+                System.out.println("Sending packet Number " + i + " of size " + numBytes);
+                System.out.println(Arrays.toString(fromFileBuffer));
 
                 i++;
-                Thread.sleep(40);
+                Thread.sleep(10);
             }
 
-            Thread.sleep(1000);
 
             bufferedFileInputStream.close();
             fileInputStream.close();

@@ -1,4 +1,6 @@
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -8,6 +10,8 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.PrivateKey;
+import java.util.Arrays;
+import java.util.Base64;
 
 public class CP2Server {
 
@@ -28,12 +32,14 @@ public class CP2Server {
         String server_PrivateKey_filepath = "C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\private_key.der";
 
         try {
+            Cipher aes_Cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+
             welcomeSocket = new ServerSocket(port);
             connectionSocket = welcomeSocket.accept();
             fromClient = new DataInputStream(connectionSocket.getInputStream());
             toClient = new DataOutputStream(connectionSocket.getOutputStream());
 
-            // Prepare all the deciphering objects
+            // Prep Server's Private Key Cipher Object
             PrivateKey Server_PrivateKey = PrivateKeyReader.get(server_PrivateKey_filepath);
             Cipher decipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             decipher.init(Cipher.DECRYPT_MODE, Server_PrivateKey);
@@ -69,8 +75,26 @@ public class CP2Server {
                     toClient.writeInt(CAsignedCert.length);
                     toClient.write(CAsignedCert);
 
-
                 }
+
+                if (packetType == 3){
+                    System.out.println("Receiving Encrypted Session Key (AES) from Client");
+                    int numBytes = fromClient.readInt();
+                    byte [] aeskey_bytearray = new byte[numBytes];
+                    fromClient.readFully(aeskey_bytearray, 0, numBytes);
+                    System.out.println(Base64.getEncoder().encodeToString(aeskey_bytearray));
+
+                    // Decrypting the Encrypted Session Key (using Server's private key)
+                    System.out.println("Decrypting Encrypted Session Key from Client");
+                    byte [] plain_aeskey = decipher.doFinal(aeskey_bytearray);
+                    System.out.println(Arrays.toString(plain_aeskey));
+                    SecretKey aesKey = new SecretKeySpec(plain_aeskey, 0, plain_aeskey.length, "AES");
+
+                    // Construct AES Session Key Cipher Object for decryption
+                    aes_Cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+                    aes_Cipher.init(Cipher.DECRYPT_MODE, aesKey);
+                }
+
 
 
                 // If the packet is for transferring the filename sent by the client.
@@ -100,7 +124,7 @@ public class CP2Server {
                     System.out.println("Receiving packet " + i + " of size " + numBytes);
 
                     if (numBytes > 0){
-                        byte [] dec_byte = decipher.doFinal(enc_block);
+                        byte [] dec_byte = aes_Cipher.doFinal(enc_block);
                         bufferedFileOutputStream.write(dec_byte, 0, numBytes);
                     }
 
