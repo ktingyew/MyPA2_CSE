@@ -1,3 +1,4 @@
+import javax.crypto.Cipher;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -6,13 +7,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.PrivateKey;
 
 public class CP1Server {
 
 	public static void main(String[] args) {
 
-    	int port = 4321;
-    	if (args.length > 0) port = Integer.parseInt(args[0]);
+		int port = 4321;
+		if (args.length > 0) port = Integer.parseInt(args[0]);
 
 		ServerSocket welcomeSocket = null;
 		Socket connectionSocket = null;
@@ -23,6 +25,7 @@ public class CP1Server {
 		BufferedOutputStream bufferedFileOutputStream = null;
 
 		String CA_Signed_Cert_filepath = "C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\CAsigned.crt";
+		String server_PrivateKey_filepath = "C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\private_key.der";
 
 		try {
 			welcomeSocket = new ServerSocket(port);
@@ -30,6 +33,12 @@ public class CP1Server {
 			fromClient = new DataInputStream(connectionSocket.getInputStream());
 			toClient = new DataOutputStream(connectionSocket.getOutputStream());
 
+			// Prepare all the deciphering objects
+			PrivateKey Server_PrivateKey = PrivateKeyReader.get(server_PrivateKey_filepath);
+			Cipher decipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			decipher.init(Cipher.DECRYPT_MODE, Server_PrivateKey);
+
+			int i = 1;
 			while (!connectionSocket.isClosed()) {
 
 				int packetType = fromClient.readInt();
@@ -66,22 +75,15 @@ public class CP1Server {
 
 				// If the packet is for transferring the filename sent by the client.
 				else if (packetType == 0) {
-					// Client is coded s.t. of all the packets it sends over, the first packet is of type == 0. All subsequent packets are of type == 1.
 
 					System.out.println("Receiving file...");
 
-					int numBytes = fromClient.readInt(); // Server expects Client to send over a packet describing the length of the filename over. If client is intending to transmit the file 100.txt, then numBytes is the length of '100.txt', i.e. 7.
-					byte [] filename = new byte[numBytes]; // Create a byte array of numBytes length. Following example, size is 7 bytes.
-					// Nat: Must use readFully()!
-					// Nat: See: https://stackoverflow.com/questions/25897627/datainputstream-read-vs-datainputstream-readfully
-					// Server expects that client will send over another packet containing the name of the file itself.
-					//  Subsequent line of code is such that it reads exactly numBytes bytes from this incoming packet
-					//  (i.e. the entirety of the name of the file). and then stores it into the byte array 'filename'.
+					int numBytes = fromClient.readInt();
+					byte [] filename = new byte[numBytes];
+
 					fromClient.readFully(filename, 0, numBytes);
 
-					// Names the output file.
 					fileOutputStream = new FileOutputStream("recv_"+new String(filename, 0, numBytes));
-					// Generate the output file.
 					bufferedFileOutputStream = new BufferedOutputStream(fileOutputStream);
 
 				}
@@ -91,17 +93,17 @@ public class CP1Server {
 					// Read the size of this packet (in bytes). It should be 117, except for the last packet that might be smaller.
 					int numBytes = fromClient.readInt();
 
-					// Reads all 117 bytes of the packet and stores the content in the byte array 'block'.
-					byte [] block = new byte[numBytes];
-					fromClient.readFully(block, 0, numBytes);
 
-					// If there is non-zero bytes of content in byte array 'block', then write it to the output file.
-					if (numBytes > 0)
-						bufferedFileOutputStream.write(block, 0, numBytes);
+					byte [] enc_block = new byte[128];
+					fromClient.readFully(enc_block);
 
-					// All intermediate packets have sisze of 117 bytes. If we detect a packet whose size is less than 117, means
-					//  we have already just written the contents of the last packet into the output file, and it's time to close
-					//  the connection.
+					System.out.println("Receiving packet " + i + " of size " + numBytes);
+
+					if (numBytes > 0){
+						byte [] dec_byte = decipher.doFinal(enc_block);
+						bufferedFileOutputStream.write(dec_byte, 0, numBytes);
+					}
+
 					if (numBytes < 117) {
 						System.out.println("Closing connection...");
 
@@ -111,6 +113,7 @@ public class CP1Server {
 						toClient.close();
 						connectionSocket.close();
 					}
+					i++;
 				}
 
 			}

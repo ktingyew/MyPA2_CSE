@@ -1,9 +1,13 @@
+import javax.crypto.Cipher;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.net.Socket;
+import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Arrays;
+import java.util.Base64;
 
 public class CP1Client {
 
@@ -11,27 +15,27 @@ public class CP1Client {
 
 		// We can specify the file to send over to Server by hard-coding here. However, we can also choose to specify
 		//  the file to send over through console commands by appending an argument.
-    	String filename = "100.txt";
-    	if (args.length > 0) filename = args[0];
+		String filename = "500.txt";
+		if (args.length > 0) filename = args[0];
 
-    	// Same reasoning as the file name above. Either hard-code the server address here, or user can provide the
+		// Same reasoning as the file name above. Either hard-code the server address here, or user can provide the
 		//  the server address as an argument in console.
-    	String serverAddress = "localhost";
-    	if (args.length > 1) filename = args[1];
+		String serverAddress = "localhost";
+		if (args.length > 1) filename = args[1];
 
-    	// Same reasoning as file name and server address above.
-    	int port = 4321;
-    	if (args.length > 2) port = Integer.parseInt(args[2]);
+		// Same reasoning as file name and server address above.
+		int port = 4321;
+		if (args.length > 2) port = Integer.parseInt(args[2]);
 
 		int numBytes = 0;
 
 		Socket clientSocket = null;
 
-        DataOutputStream toServer = null;
-        DataInputStream fromServer = null;
+		DataOutputStream toServer = null;
+		DataInputStream fromServer = null;
 
-    	FileInputStream fileInputStream = null;
-        BufferedInputStream bufferedFileInputStream = null;
+		FileInputStream fileInputStream = null;
+		BufferedInputStream bufferedFileInputStream = null;
 
 		long timeStarted = System.nanoTime();
 
@@ -59,63 +63,74 @@ public class CP1Client {
 			toServer.write(nonce.getBytes());
 
 			int packetType = fromServer.readInt();
-			if (packetType == 0){ // packetType is encrpyted_nonce, and CA-signed Certificate contain Server's public key
-
-				// Receiving encrypted nonce from Server.
-				int encrypted_nonce_size = fromServer.readInt();
-				byte [] encrypted_nonce_bytearray = new byte[encrypted_nonce_size];
-				fromServer.readFully(encrypted_nonce_bytearray, 0, encrypted_nonce_size);
-				String encrypted_nonce = new String(encrypted_nonce_bytearray);
-				System.out.println("Received Encrypted Nonce from Server: " + new String(encrypted_nonce));
-
-				// Receiving CA-signed certificate of Server's public key.
-				int CA_signed_bytearray_size = fromServer.readInt();
-				byte [] CA_signed_bytearray = new byte[CA_signed_bytearray_size];
-				fromServer.readFully(CA_signed_bytearray, 0, CA_signed_bytearray_size);
-				String CA_signed = new String(CA_signed_bytearray);
-				// System.out.println("CA Signed Certification is: " + CA_signed);
-
-				// Validating Server's cert; Verifying Server's cert with CA's public key; Extracting Server's public key
-				PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_filepath);
-
-				// TODO: This is where Client decrypts the encrypted nonce with Server's public key. Then performs comparison with the nonce it sends earlier.
-				System.out.println("Nonce verified. Server authenticated.");
-				System.out.println("Server's Public Key is: " + Server_PublicKey);
 
 
-			}
+			// Receiving encrypted nonce from Server.
+			int encrypted_nonce_size = fromServer.readInt();
+			byte [] encrypted_nonce_bytearray = new byte[encrypted_nonce_size];
+			fromServer.readFully(encrypted_nonce_bytearray, 0, encrypted_nonce_size);
+			String encrypted_nonce = new String(encrypted_nonce_bytearray);
+			System.out.println("Received Encrypted Nonce from Server: " + new String(encrypted_nonce));
 
+			// Receiving CA-signed certificate of Server's public key.
+			int CA_signed_bytearray_size = fromServer.readInt();
+			byte [] CA_signed_bytearray = new byte[CA_signed_bytearray_size];
+			fromServer.readFully(CA_signed_bytearray, 0, CA_signed_bytearray_size);
+			String CA_signed = new String(CA_signed_bytearray);
+			// System.out.println("CA Signed Certification is: " + CA_signed);
+
+			// Validating Server's cert; Verifying Server's cert with CA's public key; Extracting Server's public key
+			PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_filepath);
+
+			// TODO: This is where Client decrypts the encrypted nonce with Server's public key. Then performs comparison with the nonce it sends earlier.
+			System.out.println("Nonce verified. Server authenticated.");
+			System.out.println("Server's Public Key is: " + Server_PublicKey);
 
 
 			// Send the filename
-			toServer.writeInt(0); // This sends a packet that just contains the value '0'. It tells the Server that the very next packet will contain the name of the file to be sent over.
-			toServer.writeInt(filename.getBytes().length); // Send the length of the file name over in another packet.
-			toServer.write(filename.getBytes()); // Send the actual file name itself, in yet another packet.
+			toServer.writeInt(0);
+			toServer.writeInt(filename.getBytes().length);
+			toServer.write(filename.getBytes());
 			//toServer.flush();
 
 			// Open the file
 			fileInputStream = new FileInputStream(filename);
 			bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 
-	        byte [] fromFileBuffer = new byte[117]; // Why 117? I'm not sure.
+			// Prepare all the ciphering stuff.
+			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			cipher.init(Cipher.ENCRYPT_MODE, Server_PublicKey);
 
-	        // Send the file
-	        for (boolean fileEnded = false; !fileEnded;) {
+			byte [] fromFileBuffer = new byte[117];
+
+			// Send the file
+			int i = 1;
+			for (boolean fileEnded = false; !fileEnded;) {
+
 				numBytes = bufferedFileInputStream.read(fromFileBuffer);
+				if (numBytes < 117){
+					System.out.println("Last Packet to be sent");
+					fromFileBuffer = Arrays.copyOfRange(fromFileBuffer, 0, numBytes);
+				}
 				fileEnded = numBytes < 117;
 
-				// NOTE: File is broken down into chunks of 117 bytes big. We send each chunk as a packet to Server. But, for every chunk-packet we send over,
-				//  we send 2 preceding packets. So, each chunk of file is transmitted in groups of 3 packets. The first packet identifies that Client will be
-				//  sending over a packet-chunk. The second packet is the length of chunk of file being sent over (it's 117 for the most part, except probably
-				// for the last chunk. The 3rd packet is the actual chunk of file itself.
-				toServer.writeInt(1); // When Server receives this '1', Server will know that the subsequent packet is the length of the chunk of file.
-				toServer.writeInt(numBytes); // Server is coded to read this 'numbytes'. So that it will know how big the next packet will be (which actually contains the chunk of the file).
-				toServer.write(fromFileBuffer); // This is where Client actually sends the chunk of file in a packet.
+				byte[] ciphertext_bytearray = cipher.doFinal(fromFileBuffer);
+
+				toServer.writeInt(1);
+				toServer.writeInt(numBytes);
+				toServer.write(ciphertext_bytearray);
 				toServer.flush();
+
+				System.out.println("Sending packet Number " + i + " of size ");
+				String ciphertext64 = Base64.getEncoder().encodeToString(ciphertext_bytearray);
+				System.out.println(ciphertext64);
+
+				i++;
+				Thread.sleep(20);
 			}
 
-	        bufferedFileInputStream.close();
-	        fileInputStream.close();
+			bufferedFileInputStream.close();
+			fileInputStream.close();
 
 			System.out.println("Closing connection...");
 
