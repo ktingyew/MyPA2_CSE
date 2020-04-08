@@ -105,6 +105,7 @@ public class CP1Server {
 					}
 
 					if (numBytes < 117) {
+						toClient.writeInt(420);
 						System.out.println("Closing connection...");
 
 						if (bufferedFileOutputStream != null) bufferedFileOutputStream.close();

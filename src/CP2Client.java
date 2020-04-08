@@ -17,7 +17,7 @@ public class CP2Client {
 
         // We can specify the file to send over to Server by hard-coding here. However, we can also choose to specify
         //  the file to send over through console commands by appending an argument.
-        String filename = "1000.txt";
+        String filename = "sample_pic.jpg";
         if (args.length > 0) filename = args[0];
 
         // Same reasoning as the file name above. Either hard-code the server address here, or user can provide the
@@ -147,14 +147,15 @@ public class CP2Client {
                 System.out.println(Arrays.toString(fromFileBuffer));
 
                 i++;
-                Thread.sleep(10);
             }
 
+            // Client waits for Server to receive all the files before closing. Client waits for Server to send over a message.
+            while (fromServer.readInt() != 420){
+                bufferedFileInputStream.close();
+                fileInputStream.close();
 
-            bufferedFileInputStream.close();
-            fileInputStream.close();
-
-            System.out.println("Closing connection...");
+                System.out.println("Closing connection...");
+            }
 
         } catch (Exception e) {e.printStackTrace();}
 
