@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.PrivateKey;
+import java.util.Base64;
 
 public class CP1Server {
 
@@ -33,8 +34,12 @@ public class CP1Server {
 			fromClient = new DataInputStream(connectionSocket.getInputStream());
 			toClient = new DataOutputStream(connectionSocket.getOutputStream());
 
-			// Prepare all the deciphering objects
+			// Prep private key cipher object
 			PrivateKey Server_PrivateKey = PrivateKeyReader.get(server_PrivateKey_filepath);
+			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			cipher.init(Cipher.ENCRYPT_MODE, Server_PrivateKey);
+
+			// Prepare all the deciphering objects
 			Cipher decipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			decipher.init(Cipher.DECRYPT_MODE, Server_PrivateKey);
 
@@ -52,17 +57,17 @@ public class CP1Server {
 					byte [] nonce_bytearray = new byte[numBytes];
 					fromClient.readFully(nonce_bytearray, 0, numBytes);
 					String nonce = new String(nonce_bytearray);
+					System.out.println("Nonce from Client: " + nonce);
 
-					System.out.println("Nonce is: " + nonce);
-
-					String encrypted_nonce = nonce + " plus some encryption";
-					System.out.println("Encrypted Nonce is: " + encrypted_nonce);
+					System.out.println("Encrypting Nonce with Private Key");
+					byte [] encrypted_nonce = cipher.doFinal(nonce_bytearray);
+					System.out.println("Encrypted Nonce is: " + Base64.getEncoder().encodeToString(encrypted_nonce));
 
 					// Server sends back the encrpyted nonce, and certificate.
 					System.out.println("Sending Encrypted Nonce to Client.");
 					toClient.writeInt(0);
-					toClient.writeInt(encrypted_nonce.getBytes().length);
-					toClient.write(encrypted_nonce.getBytes());
+					toClient.writeInt(encrypted_nonce.length);
+					toClient.write(encrypted_nonce);
 
 					// Server sends its CA-signed certificate contain the Server's public key
 					byte[] CAsignedCert = Files.readAllBytes(Paths.get(CA_Signed_Cert_filepath));
