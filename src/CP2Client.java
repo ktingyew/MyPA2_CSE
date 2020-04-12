@@ -7,6 +7,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Random;
 
 public class CP2Client {
 
@@ -14,7 +15,7 @@ public class CP2Client {
 
         // We can specify the file to send over to Server by hard-coding here. However, we can also choose to specify
         //  the file to send over through console commands by appending an argument.
-        String filename = "200.txt";
+        String filename = "100.txt";
         if (args.length > 0) filename = args[0];
 
         // Same reasoning as the file name above. Either hard-code the server address here, or user can provide the
@@ -52,17 +53,16 @@ public class CP2Client {
             toServer = new DataOutputStream(clientSocket.getOutputStream());
             fromServer = new DataInputStream(clientSocket.getInputStream());
 
-            System.out.println("Sending file...");
-
-            // TODO: Generate a proper nonce: possibly current datetime?
-            String nonce = "This is my nonce!";
+            // Generating nonce
+            Random rand = new Random(System.currentTimeMillis());
+            int nonce = rand.nextInt();
             System.out.println("Generated Nonce: " + nonce);
 
             // Sending nonce over to Server.
             System.out.println("Sending nonce to Server");
             toServer.writeInt(2);
-            toServer.writeInt(nonce.getBytes().length);
-            toServer.write(nonce.getBytes());
+            toServer.writeInt(Integer.toString(nonce).getBytes().length);
+            toServer.write(Integer.toString(nonce).getBytes());
 
             int packetType = fromServer.readInt();
 
@@ -70,8 +70,8 @@ public class CP2Client {
             int encrypted_nonce_size = fromServer.readInt();
             byte [] encrypted_nonce_bytearray = new byte[encrypted_nonce_size];
             fromServer.readFully(encrypted_nonce_bytearray, 0, encrypted_nonce_size);
-            String encrypted_nonce = new String(encrypted_nonce_bytearray);
-            System.out.println("Received Encrypted Nonce from Server: " + new String(encrypted_nonce));
+            String encrypted_nonce = Base64.getEncoder().encodeToString(encrypted_nonce_bytearray);
+            System.out.println("Received Encrypted Nonce from Server: " + encrypted_nonce);
 
             // Receiving CA-signed certificate of Server's public key.
             int CA_signed_bytearray_size = fromServer.readInt();
@@ -86,14 +86,27 @@ public class CP2Client {
             CA_fos = new FileOutputStream(CAfile);
             CA_fos.write(CA_signed_bytearray);
 
+            // Client now has 2 FILES: (1) CA's Public Key Certificate. (2) Server's public key that is signed from CA.
             // Validating Server's cert; Verifying Server's cert with CA's public key; Extracting Server's public key
             PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_pubkey_filepath, CAfile_fromServer_filepath);
-
-            // TODO: This is where Client decrypts the encrypted nonce with Server's public key. Then performs comparison with the nonce it sends earlier.
-            System.out.println("Nonce verified. Server authenticated.");
             System.out.println("Server's Public Key is: " + Server_PublicKey);
 
-            // Prepare Server's Public Key cipher
+            // Prep Server's public key as use for deciphering object (to be used to decrypt the encrypted nonce).
+            Cipher decipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            decipher.init(Cipher.DECRYPT_MODE, Server_PublicKey);
+
+            // Decrypting encrypted nonce with Server's public key and verifying if it's the same as the nonce the Client sent at start,
+            byte [] decrypted_nonce_bytearray = decipher.doFinal(encrypted_nonce_bytearray);
+            String decrypted_nonce = new String(decrypted_nonce_bytearray);
+            System.out.println("Decrypted Nonce from Server: " + decrypted_nonce);
+            if (decrypted_nonce.equals(Integer.toString(nonce))){
+                System.out.println("Nonce verified. Server authenticated.");
+            }
+            else{
+                throw new IllegalStateException("Nonce do not tally. Do not trust Server.");
+            }
+
+            // Prepare Server's Public Key cipher (this will be used to encrypt the session key to be sent over to Server)
             Cipher rsa_cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             rsa_cipher.init(Cipher.ENCRYPT_MODE, Server_PublicKey);
 
@@ -117,6 +130,7 @@ public class CP2Client {
             System.out.println("Sent encrypted session key to Server.");
             System.out.println(Base64.getEncoder().encodeToString(encrypted_desKey));
 
+            System.out.println("Sending file...");
 
             // Send the filename
             toServer.writeInt(0);
