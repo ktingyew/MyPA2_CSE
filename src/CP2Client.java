@@ -15,7 +15,7 @@ public class CP2Client {
 
         // We can specify the file to send over to Server by hard-coding here. However, we can also choose to specify
         //  the file to send over through console commands by appending an argument.
-        String filename = "100.txt";
+        String filename = "5000.txt";
         if (args.length > 0) filename = args[0];
 
         // Same reasoning as the file name above. Either hard-code the server address here, or user can provide the

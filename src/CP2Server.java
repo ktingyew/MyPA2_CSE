@@ -32,17 +32,22 @@ public class CP2Server {
         String server_PrivateKey_filepath = "C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\private_key.der";
 
         try {
-            Cipher aes_Cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-
             welcomeSocket = new ServerSocket(port);
             connectionSocket = welcomeSocket.accept();
             fromClient = new DataInputStream(connectionSocket.getInputStream());
             toClient = new DataOutputStream(connectionSocket.getOutputStream());
 
-            // Prep Server's Private Key Cipher Object
+            // Prep Server's Private Key Cipher Object for decrypting
             PrivateKey Server_PrivateKey = PrivateKeyReader.get(server_PrivateKey_filepath);
             Cipher decipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             decipher.init(Cipher.DECRYPT_MODE, Server_PrivateKey);
+
+            // Prep Server's Private key Cipher Object for encrypting
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, Server_PrivateKey);
+
+            // Prep the session key cipher first. Once Server obtain the session key from Client, then can perform init.
+            Cipher aes_Cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 
             int i = 1;
             while (!connectionSocket.isClosed()) {
@@ -58,19 +63,19 @@ public class CP2Server {
                     byte [] nonce_bytearray = new byte[numBytes];
                     fromClient.readFully(nonce_bytearray, 0, numBytes);
                     String nonce = new String(nonce_bytearray);
+                    System.out.println("Nonce from Client: " + nonce);
 
-                    System.out.println("Nonce is: " + nonce);
+                    System.out.println("Encrypting Nonce with Private Key");
+                    byte [] encrypted_nonce = cipher.doFinal(nonce_bytearray);
+                    System.out.println("Encrypted Nonce is: " + Base64.getEncoder().encodeToString(encrypted_nonce));
 
-                    String encrypted_nonce = nonce + " plus some encryption";
-                    System.out.println("Encrypted Nonce is: " + encrypted_nonce);
-
-                    // Server sends back the encrpyted nonce, and certificate.
+                    // Server sends back the encrpyted nonce.
                     System.out.println("Sending Encrypted Nonce to Client.");
                     toClient.writeInt(0);
-                    toClient.writeInt(encrypted_nonce.getBytes().length);
-                    toClient.write(encrypted_nonce.getBytes());
+                    toClient.writeInt(encrypted_nonce.length);
+                    toClient.write(encrypted_nonce);
 
-                    // Server sends its CA-signed certificate contain the Server's public key
+                    // Server sends its CA-signed certificate which contain the Server's public key
                     byte[] CAsignedCert = Files.readAllBytes(Paths.get(CA_Signed_Cert_filepath));
                     toClient.writeInt(CAsignedCert.length);
                     toClient.write(CAsignedCert);

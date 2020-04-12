@@ -59,17 +59,17 @@ public class CP1Server {
 					String nonce = new String(nonce_bytearray);
 					System.out.println("Nonce from Client: " + nonce);
 
-					System.out.println("Encrypting Nonce with Private Key");
+					System.out.println("Encrypting Nonce with Server's Private Key");
 					byte [] encrypted_nonce = cipher.doFinal(nonce_bytearray);
 					System.out.println("Encrypted Nonce is: " + Base64.getEncoder().encodeToString(encrypted_nonce));
 
-					// Server sends back the encrpyted nonce, and certificate.
+					// Server sends back the encrpyted nonce.
 					System.out.println("Sending Encrypted Nonce to Client.");
 					toClient.writeInt(0);
 					toClient.writeInt(encrypted_nonce.length);
 					toClient.write(encrypted_nonce);
 
-					// Server sends its CA-signed certificate contain the Server's public key
+					// Server in addition sends its CA-signed certificate which contain the Server's public key
 					byte[] CAsignedCert = Files.readAllBytes(Paths.get(CA_Signed_Cert_filepath));
 					toClient.writeInt(CAsignedCert.length);
 					toClient.write(CAsignedCert);
