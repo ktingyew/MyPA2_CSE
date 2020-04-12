@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2e8f712a-916c-48b7-85ea-d8966d342d63" name="Default Changelist" comment="" />
+    <list default="true" id="2e8f712a-916c-48b7-85ea-d8966d342d63" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MyPA2_CSE/CP1Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MyPA2_CSE/CP1Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recv_100.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/recv_1000.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/recv_10000.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/recv_500.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/recv_sample_pic.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CP1Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CP1Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CP3Client.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CP3Server.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,23 +44,9 @@
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
   </component>
-  <component name="RunManager" selected="Application.CP1Client">
-    <configuration name="AsymKeyTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="AsymKeyTest" />
-      <module name="MyPA2_CSE" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.CP3Client">
     <configuration name="CP1Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="CP1Client" />
-      <module name="MyPA2_CSE" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="CP1Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="CP1Server" />
       <module name="MyPA2_CSE" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -68,13 +66,27 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="CP3Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="CP3Client" />
+      <module name="MyPA2_CSE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CP3Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="CP3Server" />
+      <module name="MyPA2_CSE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.CP1Client" />
-        <item itemvalue="Application.CP1Server" />
+        <item itemvalue="Application.CP3Client" />
+        <item itemvalue="Application.CP3Server" />
         <item itemvalue="Application.CP2Client" />
         <item itemvalue="Application.CP2Server" />
-        <item itemvalue="Application.AsymKeyTest" />
+        <item itemvalue="Application.CP1Client" />
       </list>
     </recent_temporary>
   </component>
@@ -96,7 +108,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
@@ -107,22 +121,22 @@
       <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state x="361" y="91" key="#Project_Structure/0.0.1536.864@0.0.1536.864" timestamp="1586264084850" />
-    <state width="1492" height="277" key="GridCell.Tab.0.bottom" timestamp="1586326625620">
+    <state width="1492" height="192" key="GridCell.Tab.0.bottom" timestamp="1586730300780">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state width="1492" height="277" key="GridCell.Tab.0.bottom/0.0.1536.864@0.0.1536.864" timestamp="1586326625620" />
-    <state width="1492" height="277" key="GridCell.Tab.0.center" timestamp="1586326625619">
+    <state width="1492" height="192" key="GridCell.Tab.0.bottom/0.0.1536.864@0.0.1536.864" timestamp="1586730300780" />
+    <state width="1492" height="192" key="GridCell.Tab.0.center" timestamp="1586730300779">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state width="1492" height="277" key="GridCell.Tab.0.center/0.0.1536.864@0.0.1536.864" timestamp="1586326625619" />
-    <state width="1492" height="277" key="GridCell.Tab.0.left" timestamp="1586326625618">
+    <state width="1492" height="192" key="GridCell.Tab.0.center/0.0.1536.864@0.0.1536.864" timestamp="1586730300779" />
+    <state width="1492" height="192" key="GridCell.Tab.0.left" timestamp="1586730300778">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state width="1492" height="277" key="GridCell.Tab.0.left/0.0.1536.864@0.0.1536.864" timestamp="1586326625618" />
-    <state width="1492" height="277" key="GridCell.Tab.0.right" timestamp="1586326625620">
+    <state width="1492" height="192" key="GridCell.Tab.0.left/0.0.1536.864@0.0.1536.864" timestamp="1586730300778" />
+    <state width="1492" height="192" key="GridCell.Tab.0.right" timestamp="1586730300779">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state width="1492" height="277" key="GridCell.Tab.0.right/0.0.1536.864@0.0.1536.864" timestamp="1586326625620" />
+    <state width="1492" height="192" key="GridCell.Tab.0.right/0.0.1536.864@0.0.1536.864" timestamp="1586730300779" />
     <state width="1492" height="277" key="GridCell.Tab.1.bottom" timestamp="1586326625622">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
@@ -143,5 +157,9 @@
       <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state x="465" y="256" key="com.intellij.ide.util.TipDialog/0.0.1536.864@0.0.1536.864" timestamp="1586279851242" />
+    <state x="209" y="53" key="new project wizard" timestamp="1586336915485">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="209" y="53" key="new project wizard/0.0.1536.864@0.0.1536.864" timestamp="1586336915485" />
   </component>
 </project>

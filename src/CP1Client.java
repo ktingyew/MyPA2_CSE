@@ -51,6 +51,7 @@ public class CP1Client {
 			toServer = new DataOutputStream(clientSocket.getOutputStream());
 			fromServer = new DataInputStream(clientSocket.getInputStream());
 
+			// Generating nonce
 			Random rand = new Random(System.currentTimeMillis());
 			int nonce = rand.nextInt();
 			System.out.println("Generated Nonce: " + nonce);
@@ -81,10 +82,11 @@ public class CP1Client {
 			PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_filepath);
 			System.out.println("Server's Public Key is: " + Server_PublicKey);
 
-			// Prep Server's public key as use for deciphering object (to be used on the encrypted nonce).
+			// Prep Server's public key as use for deciphering object (to be used to decrypt the encrypted nonce).
 			Cipher decipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			decipher.init(Cipher.DECRYPT_MODE, Server_PublicKey);
 
+			// Decrypting encrypted nonce with Server's public key and verifying if it's the same as the nonce the Client sent at start,
 			byte [] decrypted_nonce_bytearray = decipher.doFinal(encrypted_nonce_bytearray);
 			String decrypted_nonce = new String(decrypted_nonce_bytearray);
 			System.out.println("Decrypted Nonce from Server: " + decrypted_nonce);
@@ -107,13 +109,13 @@ public class CP1Client {
 			fileInputStream = new FileInputStream(filename);
 			bufferedFileInputStream = new BufferedInputStream(fileInputStream);
 
-			// Prepare all the ciphering stuff.
+			// Prepare all the ciphering stuff with Server's Public Key.
 			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, Server_PublicKey);
 
 			byte [] fromFileBuffer = new byte[117];
 
-			// Send the file
+			// Send the file via chunks using for-loop
 			int i = 1;
 			for (boolean fileEnded = false; !fileEnded;) {
 
