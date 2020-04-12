@@ -1,8 +1,5 @@
 import javax.crypto.Cipher;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
+import java.io.*;
 import java.net.Socket;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -16,7 +13,7 @@ public class CP1Client {
 
 		// We can specify the file to send over to Server by hard-coding here. However, we can also choose to specify
 		//  the file to send over through console commands by appending an argument.
-		String filename = "100.txt";
+		String filename = "1000.txt";
 		if (args.length > 0) filename = args[0];
 
 		// Same reasoning as the file name above. Either hard-code the server address here, or user can provide the
@@ -40,7 +37,10 @@ public class CP1Client {
 
 		long timeStarted = System.nanoTime();
 
-		String CA_Cert_filepath = "C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\cacse.crt";
+		FileOutputStream CA_fos = null;
+
+		// Client will have access to this file because everyone has access to CA's public key, cos it's well known.
+		String CA_Cert_pubkey_filepath = "Keys and Certificates\\cacse.crt";
 
 		try {
 
@@ -78,8 +78,15 @@ public class CP1Client {
 			String CA_signed = new String(CA_signed_bytearray);
 			System.out.println("CA Signed Certification is: " + CA_signed);
 
+			// Saving the CA-signed certificate into a physical file.
+			String CAfile_fromServer_filepath = "Keys and Certificates\\CA_cert_from_Server.crt";
+			File CAfile = new File(CAfile_fromServer_filepath);
+			CA_fos = new FileOutputStream(CAfile);
+			CA_fos.write(CA_signed_bytearray);
+
+			// Client now has 2 FILES: (1) CA's Public Key Certificate. (2) Server's public key that is signed from CA.
 			// Validating Server's cert; Verifying Server's cert with CA's public key; Extracting Server's public key
-			PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_filepath);
+			PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_pubkey_filepath, CAfile_fromServer_filepath);
 			System.out.println("Server's Public Key is: " + Server_PublicKey);
 
 			// Prep Server's public key as use for deciphering object (to be used to decrypt the encrypted nonce).

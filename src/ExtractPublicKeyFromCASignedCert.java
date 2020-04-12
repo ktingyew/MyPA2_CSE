@@ -6,18 +6,18 @@ import java.security.cert.X509Certificate;
 
 public class ExtractPublicKeyFromCASignedCert {
 
-    public static PublicKey extract(String CA_cert_filepath) throws Exception{
+    public static PublicKey extract(String CA_pubkey_filepath, String CA_signed_Server_pubkey_filepath) throws Exception{
 
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-        // Obtaining public key of CA from CA's certificate. We can trust the certificate because it's from CA.
-        InputStream fis_CA = new FileInputStream(CA_cert_filepath);
+        // Obtaining public key of CA from CA's Public Key Certificate File. We can trust the certificate because it's from CA.
+        InputStream fis_CA = new FileInputStream(CA_pubkey_filepath);
         X509Certificate CACert =(X509Certificate)cf.generateCertificate(fis_CA);
         PublicKey CA_PublicKey = CACert.getPublicKey();
 
         // TODO: If given String of ServerCert, instead of InputStream, how to do this? We have to have another argument for this String.
         // Check Validity of Server's certificate. Also verify Server's certificate with the CA"s public key we obtained earlier.
-        InputStream fis_server = new FileInputStream("C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\CAsigned.crt");
+        InputStream fis_server = new FileInputStream(CA_signed_Server_pubkey_filepath);
         X509Certificate ServerCert =(X509Certificate)cf.generateCertificate(fis_server);
         ServerCert.checkValidity();
         ServerCert.verify(CA_PublicKey);

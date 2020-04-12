@@ -6,7 +6,7 @@ public class AsymKeyTest {
     public static void main(String[] args) throws Exception{
         String CA_Cert_filepath = "C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\cacse.crt";
 
-        PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_filepath);
+        PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_filepath, "");
 
         String filepath = "C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\private_key.der";
         PrivateKey privateKey = PrivateKeyReader.get(filepath);
