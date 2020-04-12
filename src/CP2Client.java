@@ -1,10 +1,7 @@
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
+import java.io.*;
 import java.net.Socket;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -41,7 +38,10 @@ public class CP2Client {
 
         long timeStarted = System.nanoTime();
 
-        String CA_Cert_filepath = "Keys and Certificates\\cacse.crt";
+        FileOutputStream CA_fos = null;
+
+        // Client will have access to this file because everyone has access to CA's public key, cos it's well known.
+        String CA_Cert_pubkey_filepath = "Keys and Certificates\\cacse.crt";
 
         try {
 
@@ -80,8 +80,14 @@ public class CP2Client {
             String CA_signed = new String(CA_signed_bytearray);
             // System.out.println("CA Signed Certification is: " + CA_signed);
 
+            // Saving the CA-signed certificate into a physical file.
+            String CAfile_fromServer_filepath = "Keys and Certificates\\CA_cert_from_Server.crt";
+            File CAfile = new File(CAfile_fromServer_filepath);
+            CA_fos = new FileOutputStream(CAfile);
+            CA_fos.write(CA_signed_bytearray);
+
             // Validating Server's cert; Verifying Server's cert with CA's public key; Extracting Server's public key
-            PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_filepath, "");
+            PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_pubkey_filepath, CAfile_fromServer_filepath);
 
             // TODO: This is where Client decrypts the encrypted nonce with Server's public key. Then performs comparison with the nonce it sends earlier.
             System.out.println("Nonce verified. Server authenticated.");
