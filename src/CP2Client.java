@@ -17,7 +17,7 @@ public class CP2Client {
 
         // We can specify the file to send over to Server by hard-coding here. However, we can also choose to specify
         //  the file to send over through console commands by appending an argument.
-        String filename = "sample_pic.jpg";
+        String filename = "200.txt";
         if (args.length > 0) filename = args[0];
 
         // Same reasoning as the file name above. Either hard-code the server address here, or user can provide the
@@ -41,7 +41,7 @@ public class CP2Client {
 
         long timeStarted = System.nanoTime();
 
-        String CA_Cert_filepath = "C:\\Users\\kting\\Documents\\GitHub\\MyPA2_CSE\\Keys and Certificates\\cacse.crt";
+        String CA_Cert_filepath = "Keys and Certificates\\cacse.crt";
 
         try {
 
@@ -81,7 +81,7 @@ public class CP2Client {
             // System.out.println("CA Signed Certification is: " + CA_signed);
 
             // Validating Server's cert; Verifying Server's cert with CA's public key; Extracting Server's public key
-            PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_filepath);
+            PublicKey Server_PublicKey = ExtractPublicKeyFromCASignedCert.extract(CA_Cert_filepath, "");
 
             // TODO: This is where Client decrypts the encrypted nonce with Server's public key. Then performs comparison with the nonce it sends earlier.
             System.out.println("Nonce verified. Server authenticated.");
