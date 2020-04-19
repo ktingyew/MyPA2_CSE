@@ -32,7 +32,6 @@ A Submission Handout containing:
 
 
 
-
 ## What is the problem with the figure in the handout?
 I think it's about nonce. Without it, there's the playback attack. T can impersonate S by simply playing back what S sends over to C. To elaborate, T will send over the digest (signed with Ks-) to C, along with the certificate signed by CA. C will perform the checks, and indeed thinks that T is indeed S. 
 
@@ -40,7 +39,11 @@ This is a huge problem if C sends unencrypted data over to T, thinking it's S.
 
 How about if C encrypts the data before sending over? Well, T will not be able to read it, because she needs S's private key (Ks-) to decrypt it. But nevertheless, this is still a problem (although not as big) since C is getting bamboozled by sending data to an unintended recipient.
 
+The protocol in figure 1 can suffer from a playback attack. An attacker can simply record and playback the message, M = Ks-{"Hello, this is SecStore!"} and the server's signed certificate. The client will not know whether this message certificate came from the attacker or the server. The client will then extract the Ks+ and use it to compute Ks+{M}, and perform the check. The client will then see that the check has succeeded and begin the handshake for file upload. Thinking that it is the server, the client uploads unencrypted data to the attacker. Hence, this poses a serious security issue.
+
 ## To fix it
+### C: client
+### S: server
 
 C should send a nonce over to S. 
 
@@ -48,11 +51,11 @@ S replies with Ks-(nonce), its cert signed by CA, and maybe some message (can be
 
 C obtains CA's public key, use it to verify S's certificate, then extracts Ks+.
 
-C uses Ks+ to decrypt Ks-(nonce) to get nonce, and compares it with what it sends earlier to S. If they are both the same, then there's no dirty work here.
+C uses Ks+ to decrypt Ks-(nonce) to get nonce, and compares it with what it sends earlier to S. If they are both the same, then there's no dirty work here. If they are not the same, it means there is an attacker and the connection will be closed immediately.
 
-C can trust the accompanying plain text sent by S. Or had S sent over encrypted text, then C can decrypt the text with Ks+, but at least now it can trust the contents of the decryption.
+C can trust the accompanying plain text sent by S. Or had S sent over encrypted text, then C can decrypt the text with Ks+, but at least now it can trust the contents of the decryption. [do we need this line?]
 
-C can proceed with the handshake.
+C can proceed with the handshake, sending data encrypted with Ks+ to S.
 
 
 
