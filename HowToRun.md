@@ -13,7 +13,7 @@
 ## To test out AP + CP1
 1. Open up CP1Client.java
 2. Specify the filepath of the file that is to be transferred with the variable name "filename".
-3. Specify the filepath of the cacse.crt file through the variable "CA_Cert_pubkey_filepath".
+3. Specify the filepath of the public key of the CA certificate (cacse.crt) file through the variable "CA_Cert_pubkey_filepath".
 4. Specify the filepath of where to save the CA-signed certificate file using the variable "CAfile_fromServer_filepath".
 5. Open up CP1Server.java
 6. Specify the filepath of the CA-signed certificate using the variable "CA_Signed_Cert_filepath".
