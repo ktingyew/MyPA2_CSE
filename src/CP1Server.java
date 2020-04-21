@@ -98,7 +98,6 @@ public class CP1Server {
 					// Read the size of this packet (in bytes). It should be 117, except for the last packet that might be smaller.
 					int numBytes = fromClient.readInt();
 
-
 					byte [] enc_block = new byte[128];
 					fromClient.readFully(enc_block);
 
@@ -107,6 +106,14 @@ public class CP1Server {
 					if (numBytes > 0){
 						byte [] dec_byte = decipher.doFinal(enc_block);
 						bufferedFileOutputStream.write(dec_byte, 0, numBytes);
+
+
+//						String ciphertext64 = Base64.getEncoder().encodeToString(enc_block);
+//						String plaintext64 = Base64.getEncoder().encodeToString(dec_byte);
+//						System.out.println("Received Encrypted chunk: " + ciphertext64);
+//						System.out.println("Unencrypted chunk: " + plaintext64);
+
+
 					}
 
 					if (numBytes < 117) {
@@ -119,6 +126,7 @@ public class CP1Server {
 						toClient.close();
 						connectionSocket.close();
 					}
+
 					i++;
 				}
 

@@ -13,7 +13,7 @@ public class CP1Client {
 
 		// We can specify the file to send over to Server by hard-coding here. However, we can also choose to specify
 		//  the file to send over through console commands by appending an argument.
-		String filename = "sample_pic.jpg";
+		String filename = "1000.txt";
 		if (args.length > 0) filename = args[0];
 
 		// Same reasoning as the file name above. Either hard-code the server address here, or user can provide the
@@ -140,9 +140,12 @@ public class CP1Client {
 				toServer.write(ciphertext_bytearray);
 				toServer.flush();
 
-				System.out.println("Sending packet Number " + i + " of size " + numBytes);
+				String plaintext64 = Base64.getEncoder().encodeToString(fromFileBuffer);
 				String ciphertext64 = Base64.getEncoder().encodeToString(ciphertext_bytearray);
-				System.out.println(ciphertext64);
+
+//				System.out.println("Sending packet Number " + i + " of size " + numBytes);
+//				System.out.println("Unencrypted chunk: " + plaintext64);
+//				System.out.println("Encrypted chunk: " + ciphertext64);
 
 				i++;
 			}

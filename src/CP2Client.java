@@ -163,8 +163,13 @@ public class CP2Client {
                 toServer.write(ciphertext_bytearray);
                 toServer.flush();
 
-                System.out.println("Sending packet Number " + i + " of size " + numBytes);
-                System.out.println(Arrays.toString(fromFileBuffer));
+                String plaintext64 = Base64.getEncoder().encodeToString(fromFileBuffer);
+                String ciphertext64 = Base64.getEncoder().encodeToString(ciphertext_bytearray);
+
+//                System.out.println("Sending packet Number " + i + " of size " + numBytes);
+//                System.out.println("Unencrypted chunk: " + plaintext64);
+//                System.out.println("Encrypted chunk: " + ciphertext64);
+
 
                 i++;
             }

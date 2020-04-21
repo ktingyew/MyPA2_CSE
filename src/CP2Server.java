@@ -131,6 +131,14 @@ public class CP2Server {
                     if (numBytes > 0){
                         byte [] dec_byte = aes_Cipher.doFinal(enc_block);
                         bufferedFileOutputStream.write(dec_byte, 0, numBytes);
+
+
+//                        String ciphertext64 = Base64.getEncoder().encodeToString(enc_block);
+//                        String plaintext64 = Base64.getEncoder().encodeToString(dec_byte);
+//                        System.out.println("Received Encrypted chunk: " + ciphertext64);
+//                        System.out.println("Unencrypted chunk: " + plaintext64);
+
+
                     }
 
                     if (numBytes < 117) {
