@@ -50,7 +50,7 @@ public class CP1Server {
 
 				// If the packet is for sending nonce by Client.
 				if (packetType == 2){
-					System.out.println("Receiving nonce...");
+					System.out.println("Receiving Nonce!!");
 
 					int numBytes = fromClient.readInt();
 

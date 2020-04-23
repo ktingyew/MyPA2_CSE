@@ -3,6 +3,23 @@
   <component name="ChangeListManager">
     <list default="true" id="2e8f712a-916c-48b7-85ea-d8966d342d63" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/100.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1000.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/10000.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/100000.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/200.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/500.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/5000.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/50000.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MyPA2_CSE/CP1Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MyPA2_CSE/CP1Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MyPA2_CSE/CP1Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MyPA2_CSE/CP1Server.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MyPA2_CSE/CP2Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MyPA2_CSE/CP2Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recv_1000.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/recv_sample_pic.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_pic.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CP1Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CP1Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CP1Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CP1Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CP2Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CP2Client.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +47,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
@@ -84,8 +102,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.CP2Client" />
-        <item itemvalue="Application.CP2Server" />
         <item itemvalue="Application.CP1Client" />
+        <item itemvalue="Application.CP2Server" />
         <item itemvalue="Application.CP1Server" />
         <item itemvalue="Application.CP3Client" />
       </list>
@@ -126,26 +144,30 @@
       <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state x="223" y="87" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.864@0.0.1536.864" timestamp="1587500733224" />
-    <state x="498" y="235" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1586731711677">
+    <state x="498" y="235" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1587623825997">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state x="498" y="235" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1536.864@0.0.1536.864" timestamp="1586731711677" />
-    <state width="1492" height="304" key="GridCell.Tab.0.bottom" timestamp="1587500909327">
+    <state x="498" y="235" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1536.864@0.0.1536.864" timestamp="1587623825997" />
+    <state x="549" y="187" key="FileChooserDialogImpl" timestamp="1587502125793">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state width="1492" height="304" key="GridCell.Tab.0.bottom/0.0.1536.864@0.0.1536.864" timestamp="1587500909327" />
-    <state width="1492" height="304" key="GridCell.Tab.0.center" timestamp="1587500909327">
+    <state x="549" y="187" key="FileChooserDialogImpl/0.0.1536.864@0.0.1536.864" timestamp="1587502125793" />
+    <state width="1492" height="175" key="GridCell.Tab.0.bottom" timestamp="1587625883610">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state width="1492" height="304" key="GridCell.Tab.0.center/0.0.1536.864@0.0.1536.864" timestamp="1587500909327" />
-    <state width="1492" height="304" key="GridCell.Tab.0.left" timestamp="1587500909327">
+    <state width="1492" height="175" key="GridCell.Tab.0.bottom/0.0.1536.864@0.0.1536.864" timestamp="1587625883610" />
+    <state width="1492" height="175" key="GridCell.Tab.0.center" timestamp="1587625883610">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state width="1492" height="304" key="GridCell.Tab.0.left/0.0.1536.864@0.0.1536.864" timestamp="1587500909327" />
-    <state width="1492" height="304" key="GridCell.Tab.0.right" timestamp="1587500909327">
+    <state width="1492" height="175" key="GridCell.Tab.0.center/0.0.1536.864@0.0.1536.864" timestamp="1587625883610" />
+    <state width="1492" height="175" key="GridCell.Tab.0.left" timestamp="1587625883609">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state width="1492" height="304" key="GridCell.Tab.0.right/0.0.1536.864@0.0.1536.864" timestamp="1587500909327" />
+    <state width="1492" height="175" key="GridCell.Tab.0.left/0.0.1536.864@0.0.1536.864" timestamp="1587625883609" />
+    <state width="1492" height="175" key="GridCell.Tab.0.right" timestamp="1587625883610">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1492" height="175" key="GridCell.Tab.0.right/0.0.1536.864@0.0.1536.864" timestamp="1587625883610" />
     <state width="1492" height="277" key="GridCell.Tab.1.bottom" timestamp="1586326625622">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
@@ -162,10 +184,10 @@
       <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state width="1492" height="277" key="GridCell.Tab.1.right/0.0.1536.864@0.0.1536.864" timestamp="1586326625621" />
-    <state x="465" y="256" key="com.intellij.ide.util.TipDialog" timestamp="1587500970093">
+    <state x="465" y="256" key="com.intellij.ide.util.TipDialog" timestamp="1587622978562">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state x="465" y="256" key="com.intellij.ide.util.TipDialog/0.0.1536.864@0.0.1536.864" timestamp="1587500970093" />
+    <state x="465" y="256" key="com.intellij.ide.util.TipDialog/0.0.1536.864@0.0.1536.864" timestamp="1587622978562" />
     <state x="209" y="53" key="new project wizard" timestamp="1586336915485">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
@@ -174,5 +196,9 @@
       <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state x="425" y="197" key="run.anything.popup/0.0.1536.864@0.0.1536.864" timestamp="1587501615865" />
+    <state x="430" y="181" key="search.everywhere.popup" timestamp="1587502222046">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="430" y="181" key="search.everywhere.popup/0.0.1536.864@0.0.1536.864" timestamp="1587502222046" />
   </component>
 </project>
